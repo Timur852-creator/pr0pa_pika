@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>pr0pa_pika</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0a0a;
+    color: #f2f2f2;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .grain {
+    position: fixed; inset: 0; pointer-events: none; z-index: 999;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+  }
+  header {
+    padding: 34px 8vw 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #1f1f1f;
+  }
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(34px, 6vw, 64px);
+    letter-spacing: 3px;
+    line-height: 1;
+    background: linear-gradient(90deg, #ff2d55, #ffd60a, #00e5ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-transform: uppercase;
+  }
+  .edit-toggle {
+    background: transparent;
+    border: 1px solid #333;
+    color: #888;
+    padding: 8px 16px;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .edit-toggle:hover { border-color: #ffd60a; color: #ffd60a; }
+  .edit-toggle.on { border-color: #ff2d55; color: #ff2d55; }
+
+  main {
+    flex: 1;
+    padding: 70px 8vw 60px;
+    max-width: 1100px;
+    width: 100%;
+  }
+
+  .username {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(50px, 11vw, 140px);
+    line-height: 0.9;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 36px;
+  }
+  .username .accent { color: #ff2d55; }
+
+  .content {
+    font-size: 17px;
+    line-height: 1.8;
+    color: #ccc;
+    min-height: 80px;
+    outline: none;
+    white-space: pre-wrap;
+  }
+  .content:focus { color: #fff; }
+
+  [contenteditable="true"] {
+    border: 1px dashed #333;
+    padding: 10px;
+    border-radius: 4px;
+  }
+
+  .cta {
+    margin-top: 48px;
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    padding: 20px 40px;
+    background: #ff2d55;
+    color: #fff;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 4px;
+    text-decoration: none;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .cta:hover {
+    background: #ffd60a;
+    color: #0a0a0a;
+    transform: translateY(-3px);
+  }
+  .cta .dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    background: #0a0a0a;
+    animation: pulse 1.4s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+  footer {
+    padding: 30px 8vw;
+    border-top: 1px solid #1f1f1f;
+    font-size: 12px;
+    color: #555;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+
+<header>
+  <div class="logo">pr0pa_pika</div>
+  <button class="edit-toggle" id="editBtn">Редактировать</button>
+</header>
+
+<main>
+  <div class="username" id="username"><span class="accent">dreman_propa_pika</span></div>
+
+  <div class="content" id="content" contenteditable="false">
+Напиши здесь что угодно. Включи «Редактировать» сверху, правь текст прямо на странице, всё сохранится в браузере.
+  </div>
+
+  <a class="cta" id="dmBtn" href="https://discord.com/users/dreman_propa_pika" target="_blank" rel="noopener">
+    <span class="dot"></span> Написать
+  </a>
+</main>
+
+<footer>discord: dreman_propa_pika</footer>
+
+<script>
+  const usernameEl = document.getElementById('username');
+  const contentEl  = document.getElementById('content');
+  const editBtn    = document.getElementById('editBtn');
+  const dmBtn      = document.getElementById('dmBtn');
+
+  // Discord ID -> прямая ссылка. Если знаешь numeric ID — замени строку ниже.
+  const DISCORD_URL = 'https://discord.com/users/dreman_propa_pika';
+  dmBtn.href = DISCORD_URL;
+
+  // Загрузка сохранённого
+  const savedName = localStorage.getItem('pika_username');
+  const savedBody = localStorage.getItem('pika_content');
+  if (savedName) usernameEl.innerHTML = savedName;
+  if (savedBody) contentEl.innerHTML = savedBody;
+
+  let editing = false;
+
+  editBtn.addEventListener('click', () => {
+    editing = !editing;
+    usernameEl.setAttribute('contenteditable', editing);
+    contentEl.setAttribute('contenteditable', editing);
+    editBtn.classList.toggle('on', editing);
+    editBtn.textContent = editing ? 'Сохранить' : 'Редактировать';
+
+    if (editing) {
+      contentEl.focus();
+    } else {
+      localStorage.setItem('pika_username', usernameEl.innerHTML);
+      localStorage.setItem('pika_content', contentEl.innerHTML);
+    }
+  });
+</script>
+
+</body>
+</html>
